@@ -117,7 +117,7 @@ func InsertOneDoc(db *mongo.Database, collection string, doc interface{}) (inser
 // With replaceOne() you can only replace the entire document,
 // while updateOne() allows for updating fields. Since replaceOne() replaces the entire document - fields in the old document not contained in the new will be lost.
 // With updateOne() new fields can be added without losing the fields in the old document.
-func UpdateDoc(db *mongo.Database, collection string, filter bson.M, updatefield bson.M) (updateresult *mongo.UpdateResult, err error) {
+func UpdateOneDoc(db *mongo.Database, collection string, filter bson.M, updatefield bson.M) (updateresult *mongo.UpdateResult, err error) {
 	updateresult, err = db.Collection(collection).UpdateOne(context.TODO(), filter, updatefield)
 	if err != nil {
 		return
@@ -133,7 +133,7 @@ func ReplaceOneDoc(db *mongo.Database, collection string, filter bson.M, doc int
 	return
 }
 
-func DeleteOneDoc(db *mongo.Database, collection string, filter bson.M) error {
-	_, err := db.Collection(collection).DeleteOne(context.Background(), filter)
-	return err
+func DeleteOneDoc(db *mongo.Database, collection string, filter bson.M) (updateresult *mongo.DeleteResult, err error) {
+	updateresult, err = db.Collection(collection).DeleteOne(context.Background(), filter)
+	return
 }
