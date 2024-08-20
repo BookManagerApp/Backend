@@ -3,9 +3,7 @@ package config
 import "net/http"
 
 var Origins = []string{
-	"https://cdn.blkkalittifaq.id",
-	"https://www.blkkalittifaq.id",
-	"https://kabar.blkkalittifaq.id",
+	"https://bookmanagerapp.github.io/Frontend/",
 }
 
 var Headers = []string{
