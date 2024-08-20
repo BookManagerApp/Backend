@@ -17,6 +17,18 @@ func URL(w http.ResponseWriter, r *http.Request) {
 
 	var method, path string = r.Method, r.URL.Path
 	switch {
+	case method == "GET" && path == "/data/book":
+		controller.GetBooks(w, r)
+	case method == "GET" && path == "/data/book/detail":
+		controller.GetOneBook(w, r)
+	case method == "POST" && path == "/data/book":
+		controller.PostBook(w, r)
+	case method == "PUT" && path == "/data/book":
+		controller.UpdateBook(w, r)
+	case method == "DELETE" && path == "/data/book":
+		controller.DeleteBook(w, r)
+
+
 	case method == "GET" && path == "/data/gallery":
 		controller.GetGallery(w, r)
 	case method == "GET" && path == "/data/product":
