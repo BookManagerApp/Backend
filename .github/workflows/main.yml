@@ -26,19 +26,20 @@ jobs:
         run: 'gcloud info'
       - name: 'Deploy a gen 2 cloud function'
         run: |
-          gcloud functions deploy blkkalittifaq \
+          gcloud functions deploy bookmanager \
             --region=asia-southeast2 \
             --allow-unauthenticated \
             --entry-point=WebHook \
             --gen2 \
             --runtime=go122 \
             --trigger-http \
-            --service-account new-compute-service-account@blkkalittifaq-426014.iam.gserviceaccount.com \
-            --project blkkalittifaq-426014 \
+            --service-account bookmanager@bookmanager-433114.iam.gserviceaccount.com \
+            --project bookmanager-433114 \
             --set-env-vars=MONGOSTRING='${{ secrets.MONGOSTRING }}'
       - name: 'Cek eksistensi fungsi'
-        run: 'gcloud functions describe blkkalittifaq --region=asia-southeast2'
+        run: 'gcloud functions describe bookmanager --region=asia-southeast2'
       - name: 'Cek log debugging'
-        run: 'gcloud functions logs read blkkalittifaq --region=asia-southeast2'
+        run: 'gcloud functions logs read bookmanager --region=asia-southeast2'
       - name: 'Cleaning Artifact Registry'
         run: 'gcloud artifacts repositories delete gcf-artifacts --location=asia-southeast2 --quiet'
+        
