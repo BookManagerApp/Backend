@@ -2,7 +2,6 @@ package query
 
 import (
 	"github.com/BookManagerApp/Backend/model"
-	"github.com/gocroot/model"
 	"gorm.io/gorm"
 )
 
@@ -29,15 +28,15 @@ func PostBook(db *gorm.DB, book model.Book) error {
 	return nil
 }
 
-func UpdateBuku(db *gorm.DB, id string, updatedBuku model.Buku) error { // Memperbarui data buku dalam database berdasarkan ID
-	if err := db.Model(&model.Buku{}).Where("id_buku = ?", id).Updates(updatedBuku).Error; err != nil {
+func UpdateBook(db *gorm.DB, id string, updatedBook model.Book) error {
+	if err := db.Model(&model.Book{}).Where("id = ?", id).Updates(updatedBook).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func DeleteBuku(db *gorm.DB, id string) error { // Menghapus data buku dari database berdasarkan ID
-	if err := db.Delete(&model.Buku{}, id).Error; err != nil {
+func DeleteBook(db *gorm.DB, id string) error { 
+	if err := db.Delete(&model.Book{}, id).Error; err != nil {
 		return err
 	}
 	return nil

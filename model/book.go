@@ -1,11 +1,9 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type Book struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Title        string             `bson:"title,omitempty" json:"title,omitempty"`
-	Author       string             `bson:"author,omitempty" json:"author,omitempty"`
-	PublishedYear int                `bson:"publishedYear,omitempty" json:"publishedYear,omitempty"`
-	Genre        string             `bson:"genre,omitempty" json:"genre,omitempty"`
+	ID            int    `gorm:"primaryKey;column:id" json:"-"`
+	Title         string `gorm:"column:title" json:"title"`
+	Author        string `gorm:"column:author" json:"author"`
+	PublishedYear int    `gorm:"column:publishedyear" json:"publishedyear"`
+	Genre         string `gorm:"column:genre" json:"genre"`
 }
