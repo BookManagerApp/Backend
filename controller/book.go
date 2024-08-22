@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/BookManagerApp/Backend/model"
 	"github.com/BookManagerApp/Backend/query"
@@ -33,9 +33,10 @@ func GetBooks(c *fiber.Ctx) error {
 }
 
 func GetBookByID(c *fiber.Ctx) error {
-	id := c.Params("id")
-	if id == "" {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak ditemukan"})
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak valid"})
 	}
 
 	db := c.Locals("db").(*gorm.DB)
@@ -45,60 +46,95 @@ func GetBookByID(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.JSON(fiber.Map{"code": http.StatusOK, "success": true, "status": "success", "data": book})
+	if book == nil {
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{
+			"code":    http.StatusNotFound,
+			"success": false,
+			"status":  "error",
+			"message": "Buku tidak ditemukan",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"code":    http.StatusOK,
+		"success": true,
+		"status":  "success",
+		"data":    book,
+	})
 }
 
+
 func PostBook(c *fiber.Ctx) error {
-	var book model.Book
+    var book model.Book
 
-	if err := c.BodyParser(&book); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to parse request"})
-	}
+    if err := c.BodyParser(&book); err != nil {
+        return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to parse request"})
+    }
 
-	fmt.Printf("Received book data: %+v\n", book)
+    db := c.Locals("db").(*gorm.DB)
 
-	db := c.Locals("db").(*gorm.DB)
+    if err := query.PostBook(db, book); err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save book"})
+    }
 
-	if err := query.PostBook(db, book); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save book"})
-	}
-
-	return c.Status(http.StatusCreated).JSON(fiber.Map{"code": http.StatusCreated, "success": true, "status": "success", "message": "Book saved successfully", "data": book})
+    return c.Status(http.StatusCreated).JSON(fiber.Map{
+        "code":    http.StatusCreated,
+        "success": true,
+        "status":  "success",
+        "message": "Book saved successfully",
+        "data":    book,  // Pastikan `book` sudah termasuk field ID
+    })
 }
 
 
 func UpdateBook(c *fiber.Ctx) error {
-	id := c.Params("id")
-	if id == "" {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak ditemukan"})
-	}
+    idStr := c.Params("id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak valid"})
+    }
 
-	var updatedBook model.Book
+    var updatedBook model.Book
 
-	if err := c.BodyParser(&updatedBook); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Gagal memproses request"})
-	}
+    if err := c.BodyParser(&updatedBook); err != nil {
+        return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Gagal memproses request"})
+    }
 
-	db := c.Locals("db").(*gorm.DB)
+    db := c.Locals("db").(*gorm.DB)
 
-	if err := query.UpdateBook(db, id, updatedBook); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal memperbarui buku"})
-	}
+    if err := query.UpdateBook(db, id, updatedBook); err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal memperbarui buku"})
+    }
 
-	return c.JSON(fiber.Map{"code": http.StatusOK, "success": true, "status": "success", "message": "Buku berhasil diperbarui"})
+    return c.JSON(fiber.Map{
+        "code":    http.StatusOK,
+        "success": true,
+        "status":  "success",
+        "message": "Buku berhasil diperbarui",
+        "data":    updatedBook, // Pastikan ID juga ikut
+    })
 }
+
 
 func DeleteBook(c *fiber.Ctx) error {
-	id := c.Params("id")
-	if id == "" {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak ditemukan"})
-	}
+    idStr := c.Params("id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "ID buku tidak valid"})
+    }
 
-	db := c.Locals("db").(*gorm.DB)
+    db := c.Locals("db").(*gorm.DB)
 
-	if err := query.DeleteBook(db, id); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal menghapus buku"})
-	}
+    if err := query.DeleteBook(db, id); err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal menghapus buku"})
+    }
 
-	return c.JSON(fiber.Map{"code": http.StatusOK, "success": true, "status": "success", "message": "Buku berhasil dihapus", "deleted_id": id})
+    return c.JSON(fiber.Map{
+        "code":    http.StatusOK,
+        "success": true,
+        "status":  "success",
+        "message": "Buku berhasil dihapus",
+        "deleted_id": id, // ID yang dihapus
+    })
 }
+
