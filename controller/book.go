@@ -13,24 +13,20 @@ import (
 func GetBooks(c *fiber.Ctx) error {
 	db := c.Locals("db").(*gorm.DB)
 
-	books, err := query.GetBooks(db)
-	if err != nil {
+	var books []model.Book
+	if err := db.Find(&books).Error; err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	if len(books) == 0 {
-		return c.Status(http.StatusNotFound).JSON(fiber.Map{"code": http.StatusNotFound, "success": false, "status": "error", "message": "Data buku tidak ditemukan", "data": nil})
-	}
-
-	response := fiber.Map{
+	return c.JSON(fiber.Map{
 		"code":    http.StatusOK,
 		"success": true,
 		"status":  "success",
 		"data":    books,
-	}
-
-	return c.Status(http.StatusOK).JSON(response)
+	})
 }
+
+
 
 func GetBookByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
