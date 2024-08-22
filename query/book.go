@@ -18,13 +18,14 @@ func GetBooks(db *gorm.DB) ([]model.Book, error) {
     return books, nil
 }
 
-func GetBookByID(db *gorm.DB, id int) (*model.Book, error) { 
+func GetBookByID(db *gorm.DB, id int) (*model.Book, error) {
     var book model.Book
-    if err := db.First(&book, id).Error; err != nil {
+    if err := db.Where("id_book = ?", id).First(&book).Error; err != nil {
         return nil, err
     }
     return &book, nil
 }
+
 
 func PostBook(db *gorm.DB, book model.Book) error { 
 	if err := db.Create(&book).Error; err != nil {
@@ -45,8 +46,9 @@ func UpdateBook(db *gorm.DB, id int, updatedBook model.Book) error {
 }
 
 func DeleteBook(db *gorm.DB, id int) error { 
-	if err := db.Delete(&model.Book{}, id).Error; err != nil {
-		return err
-	}
-	return nil
+    if err := db.Where("id_book = ?", id).Delete(&model.Book{}).Error; err != nil {
+        return err
+    }
+    return nil
 }
+
