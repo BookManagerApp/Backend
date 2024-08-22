@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/BookManagerApp/Backend/model"
@@ -51,17 +52,20 @@ func PostBook(c *fiber.Ctx) error {
 	var book model.Book
 
 	if err := c.BodyParser(&book); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Gagal memproses request"})
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to parse request"})
 	}
+
+	fmt.Printf("Received book data: %+v\n", book)
 
 	db := c.Locals("db").(*gorm.DB)
 
 	if err := query.PostBook(db, book); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Gagal menyimpan buku"})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save book"})
 	}
 
-	return c.Status(http.StatusCreated).JSON(fiber.Map{"code": http.StatusCreated, "success": true, "status": "success", "message": "Buku berhasil disimpan", "data": book})
+	return c.Status(http.StatusCreated).JSON(fiber.Map{"code": http.StatusCreated, "success": true, "status": "success", "message": "Book saved successfully", "data": book})
 }
+
 
 func UpdateBook(c *fiber.Ctx) error {
 	id := c.Params("id")
