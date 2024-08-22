@@ -1,6 +1,7 @@
 package query
 
 import (
+	"errors"
 	"log"
 
 	"github.com/BookManagerApp/Backend/model"
@@ -34,10 +35,14 @@ func PostBook(db *gorm.DB, book model.Book) error {
 }
 
 func UpdateBook(db *gorm.DB, id string, updatedBook model.Book) error {
-	if err := db.Model(&model.Book{}).Where("id = ?", id).Updates(updatedBook).Error; err != nil {
-		return err
-	}
-	return nil
+    result := db.Model(&model.Book{}).Where("id = ?", id).Updates(updatedBook)
+    if result.Error != nil {
+        return result.Error
+    }
+    if result.RowsAffected == 0 {
+        return errors.New("tidak ada buku yang diperbarui")
+    }
+    return nil
 }
 
 func DeleteBook(db *gorm.DB, id string) error { 
