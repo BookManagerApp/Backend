@@ -130,3 +130,19 @@ func DeleteBook(c *fiber.Ctx) error {
         "deleted_id": id, // ID yang dihapus
     })
 }
+
+func GetGenres(c *fiber.Ctx) error {
+	db := c.Locals("db").(*gorm.DB)
+
+	genres, err := query.GetGenres(db)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"code":    http.StatusOK,
+		"success": true,
+		"status":  "success",
+		"data":    genres,
+	})
+}

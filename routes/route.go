@@ -12,6 +12,7 @@ func SetupRoutes(app *fiber.App) {
 	app.Post("/book/post", controller.PostBook)
 	app.Put("/book/update/:id", controller.UpdateBook)
 	app.Delete("/book/delete/:id", controller.DeleteBook)
+	app.Get("/genres", controller.GetGenres)
 
 	// Rute untuk pengguna
 	app.Post("/register", controller.Register)

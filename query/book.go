@@ -26,7 +26,6 @@ func GetBookByID(db *gorm.DB, id int) (*model.Book, error) {
     return &book, nil
 }
 
-
 func PostBook(db *gorm.DB, book model.Book) error { 
 	if err := db.Create(&book).Error; err != nil {
 		return err
@@ -52,3 +51,10 @@ func DeleteBook(db *gorm.DB, id int) error {
     return nil
 }
 
+func GetGenres(db *gorm.DB) ([]string, error) {
+	var genres []string
+	if err := db.Model(&model.Book{}).Distinct("genre").Pluck("genre", &genres).Error; err != nil {
+		return nil, err
+	}
+	return genres, nil
+}
