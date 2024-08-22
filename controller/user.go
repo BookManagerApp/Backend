@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-// Register handler
+// Register
 func Register(c *fiber.Ctx) error {
 	var user model.Users
 	if err := c.BodyParser(&user); err != nil {
@@ -25,14 +25,23 @@ func Register(c *fiber.Ctx) error {
 	user.Password = hashedPassword
 
 	db := c.Locals("db").(*gorm.DB)
+	// Periksa apakah email sudah ada di database
+	var existingUser model.Users
+	if result := db.Where("email = ?", user.Email).First(&existingUser); result.Error == nil {
+		// Jika ada, kembalikan error bahwa email sudah terdaftar
+		return c.Status(fiber.StatusConflict).SendString("Email already registered")
+	}
+
 	if result := db.Create(&user); result.Error != nil {
+		log.Printf("Failed to register user: %v", result.Error)
 		return c.Status(fiber.StatusInternalServerError).SendString("Failed to register user")
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
 
-// Login handler
+
+// Login
 func Login(c *fiber.Ctx) error {
 	var loginData struct {
 		Email    string `json:"email"`
