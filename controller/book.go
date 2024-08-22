@@ -63,7 +63,6 @@ func GetBookByID(c *fiber.Ctx) error {
 	})
 }
 
-
 func PostBook(c *fiber.Ctx) error {
     var book model.Book
 
@@ -85,7 +84,6 @@ func PostBook(c *fiber.Ctx) error {
         "data":    book,  // Pastikan `book` sudah termasuk field ID
     })
 }
-
 
 func UpdateBook(c *fiber.Ctx) error {
     idStr := c.Params("id")
@@ -115,7 +113,6 @@ func UpdateBook(c *fiber.Ctx) error {
     })
 }
 
-
 func DeleteBook(c *fiber.Ctx) error {
     idStr := c.Params("id")
     id, err := strconv.Atoi(idStr)
@@ -137,4 +134,3 @@ func DeleteBook(c *fiber.Ctx) error {
         "deleted_id": id, // ID yang dihapus
     })
 }
-
