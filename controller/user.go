@@ -64,6 +64,19 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Invalid email or password")
 	}
 
-	// Here you should generate a JWT token and return it in the response
-	return c.Status(fiber.StatusOK).SendString("Login successful")
+	// Generate JWT token
+	token, err := utils.GenerateToken(user.IDUser, user.Email)
+	if err != nil {
+		log.Printf("Failed to generate token: %v", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to generate token")
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": token,
+	})
+}
+
+// SomeProtectedHandler, handler untuk rute yang dilindungi
+func SomeProtectedHandler(c *fiber.Ctx) error {
+    return c.SendString("This is a protected endpoint")
 }

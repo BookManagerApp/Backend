@@ -1,20 +1,27 @@
 package utils
 
 import (
-    "golang.org/x/crypto/bcrypt"
+    "github.com/gofiber/fiber/v2"
+    "strings"
+    "log"
 )
 
-// HashPassword meng-hash password sebelum menyimpannya ke database
-func HashPassword(password string) (string, error) {
-    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-        return "", err
+// AuthRequired memeriksa autentikasi JWT
+func AuthRequired(c *fiber.Ctx) error {
+    token := c.Get("Authorization")
+    if token == "" {
+        return c.Status(fiber.StatusUnauthorized).SendString("Missing token")
     }
-    return string(hashedPassword), nil
-}
 
-// CheckPasswordHash memverifikasi password terhadap hash yang tersimpan
-func CheckPasswordHash(password, hash string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-    return err == nil
+    token = strings.TrimPrefix(token, "Bearer ")
+    log.Printf("Received token: %s", token) // Tambahkan log
+
+    _, claims, err := ParseToken(token)
+    if err != nil {
+        log.Printf("Token parsing error: %v", err) // Tambahkan log
+        return c.Status(fiber.StatusUnauthorized).SendString("Invalid token")
+    }
+
+    c.Locals("user", claims)
+    return c.Next()
 }
