@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/BookManagerApp/Backend/config"
 	"github.com/BookManagerApp/Backend/routes"
@@ -16,6 +15,7 @@ func main() {
 
     // Membuat koneksi ke database
     db := config.CreateDBConnection()
+
 
     // Mengatur middleware logger
     app.Use(logger.New(logger.Config{
@@ -43,14 +43,8 @@ func main() {
 		return c.SendString("Server is running.")
 	})
 
-	// Mengambil port dari variabel lingkungan
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000" // Default port jika tidak ada variabel PORT
-	}
-
-	// Menjalankan server Fiber pada port yang ditentukan
-	if err := app.Listen(":" + port); err != nil {
+	// Menjalankan server Fiber pada port 3000
+	if err := app.Listen(":3000"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
