@@ -1,18 +1,18 @@
 package config
 
 import (
-    "os"
-    "time"
+	"os"
+	"time"
 
-    _ "github.com/go-sql-driver/mysql"
-    "github.com/joho/godotenv"
-    "gorm.io/driver/mysql"
-    "gorm.io/gorm"
-    "gorm.io/gorm/schema"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 func LoadEnv() {
-    err := godotenv.Load()
+    err := godotenv.Load("/home/dwidt/myapp/.env")
     if err != nil {
         panic("Error loading .env file")
     }
