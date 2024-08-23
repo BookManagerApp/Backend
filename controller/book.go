@@ -147,18 +147,18 @@ func GetGenres(c *fiber.Ctx) error {
 	})
 }
 
-// SearchBooks mencari buku berdasarkan query parameter q
-func SearchBooks(c *fiber.Ctx) error {
-    searchTerm := c.Query("q")
-    if searchTerm == "" {
-        return c.Status(fiber.StatusBadRequest).SendString("Query parameter 'q' is required")
-    }
+// // SearchBooks mencari buku berdasarkan query parameter q
+// func SearchBooks(c *fiber.Ctx) error {
+//     searchTerm := c.Query("q")
+//     if searchTerm == "" {
+//         return c.Status(fiber.StatusBadRequest).SendString("Query parameter 'q' is required")
+//     }
 
-    db := c.Locals("db").(*gorm.DB)
-    var books []model.Book
-    if err := db.Where("title LIKE ? OR author LIKE ?", "%"+searchTerm+"%", "%"+searchTerm+"%").Find(&books).Error; err != nil {
-        return c.Status(fiber.StatusInternalServerError).SendString("Failed to search books")
-    }
+//     db := c.Locals("db").(*gorm.DB)
+//     var books []model.Book
+//     if err := db.Where("title LIKE ? OR author LIKE ?", "%"+searchTerm+"%", "%"+searchTerm+"%").Find(&books).Error; err != nil {
+//         return c.Status(fiber.StatusInternalServerError).SendString("Failed to search books")
+//     }
 
-    return c.Status(fiber.StatusOK).JSON(books)
-}
+//     return c.Status(fiber.StatusOK).JSON(books)
+// }
