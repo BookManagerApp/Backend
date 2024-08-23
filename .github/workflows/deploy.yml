@@ -29,7 +29,17 @@ jobs:
       run: |
         go build -o myapp main.go
         chmod a+x myapp
-    
+
+    - name: Remove old files
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.sshhost }}
+        username: ${{ secrets.sshusername }}
+        password: ${{ secrets.sshpassword }}
+        port: ${{ secrets.sshport }}
+        script: |
+          rm -rf ${{ secrets.folder }}/myapp
+
     - name: Copy binary file via ssh password
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -48,6 +58,6 @@ jobs:
         password: ${{ secrets.sshpassword }}
         port: ${{ secrets.sshport }}
         script: |
-          ls -l myapp
+          ls -l ${{ secrets.folder }}/myapp
           curl https://icanhazip.com/
           curl -X POST --basic --user "${{ secrets.apikey }}:" https://api.alwaysdata.com/v1/site/${{ secrets.appid }}/restart/
