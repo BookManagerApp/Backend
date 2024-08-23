@@ -23,7 +23,11 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	user.Password = hashedPassword
-	user.Role = "user" // Set default role for new users
+
+	// Default ke "pengguna" jika tidak ditentukan
+	if user.Role == "" {
+		user.Role = "user"
+	}
 
 	db := c.Locals("db").(*gorm.DB)
 	// Check if email already exists
@@ -39,8 +43,6 @@ func Register(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
-
-
 
 // Login
 func Login(c *fiber.Ctx) error {
@@ -74,6 +76,7 @@ func Login(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"token": token,
+		"role":  user.Role,
 	})
 }
 
