@@ -14,6 +14,9 @@ func SetupRoutes(app *fiber.App) {
     app.Put("/book/update/:id", controller.UpdateBook)
     app.Delete("/book/delete/:id", controller.DeleteBook)
     app.Get("/genres", controller.GetGenres)
+	// Rute untuk pencarian buku
+	app.Get("/search", controller.SearchBooks)
+
 
     // Rute untuk pengguna
     app.Post("/register", controller.Register)
