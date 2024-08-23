@@ -1,27 +1,28 @@
 package utils
 
 import (
-    "github.com/gofiber/fiber/v2"
-    "strings"
-    "log"
+	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gofiber/fiber/v2"
 )
 
 // AuthRequired memeriksa autentikasi JWT
 func AuthRequired(c *fiber.Ctx) error {
-    token := c.Get("Authorization")
-    if token == "" {
-        return c.Status(fiber.StatusUnauthorized).SendString("Missing token")
-    }
+	tokenString := c.Get("Authorization")
+	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-    token = strings.TrimPrefix(token, "Bearer ")
-    log.Printf("Received token: %s", token) // Tambahkan log
+	claims := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("your_secret_key"), nil
+	})
+	if err != nil || !token.Valid {
+		return c.Status(fiber.StatusUnauthorized).SendString("Invalid or expired token")
+	}
 
-    _, claims, err := ParseToken(token)
-    if err != nil {
-        log.Printf("Token parsing error: %v", err) // Tambahkan log
-        return c.Status(fiber.StatusUnauthorized).SendString("Invalid token")
-    }
+	role := claims["role"].(string)
+	c.Locals("role", role)
 
-    c.Locals("user", claims)
-    return c.Next()
+	return c.Next()
 }
+

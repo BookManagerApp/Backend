@@ -14,5 +14,6 @@ type Users struct {
 	IDUser    uint      `gorm:"primaryKey;column:id_user" json:"id_user"`
 	Password  string    `gorm:"column:password" json:"password"`
 	Email     string    `gorm:"column:email" json:"email"`
+	Role      string    `gorm:"column:role" json:"role"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime" json:"-"`
 }

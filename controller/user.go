@@ -23,12 +23,12 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	user.Password = hashedPassword
+	user.Role = "user" // Set default role for new users
 
 	db := c.Locals("db").(*gorm.DB)
-	// Periksa apakah email sudah ada di database
+	// Check if email already exists
 	var existingUser model.Users
 	if result := db.Where("email = ?", user.Email).First(&existingUser); result.Error == nil {
-		// Jika ada, kembalikan error bahwa email sudah terdaftar
 		return c.Status(fiber.StatusConflict).SendString("Email already registered")
 	}
 
@@ -39,6 +39,7 @@ func Register(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
+
 
 
 // Login
@@ -64,8 +65,8 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString("Invalid email or password")
 	}
 
-	// Generate JWT token
-	token, err := utils.GenerateToken(user.IDUser, user.Email)
+	// Generate JWT token with role
+	token, err := utils.GenerateToken(user.IDUser, user.Email, user.Role)
 	if err != nil {
 		log.Printf("Failed to generate token: %v", err)
 		return c.Status(fiber.StatusInternalServerError).SendString("Failed to generate token")
@@ -79,4 +80,14 @@ func Login(c *fiber.Ctx) error {
 // SomeProtectedHandler, handler untuk rute yang dilindungi
 func SomeProtectedHandler(c *fiber.Ctx) error {
     return c.SendString("This is a protected endpoint")
+}
+
+// AdminOnly is a middleware function that restricts access to admin users only
+func AdminOnly(c *fiber.Ctx) error {
+	role := c.Locals("role").(string)
+	if role != "admin" {
+		return c.Status(fiber.StatusForbidden).SendString("Access denied")
+	}
+
+	return c.Next()
 }

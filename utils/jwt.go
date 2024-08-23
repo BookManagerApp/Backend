@@ -5,18 +5,23 @@ import (
     "time"
 )
 
-var secretKey = []byte("your_secret_key") // Ganti dengan kunci rahasia yang kuat
+var secretKey = []byte("your_secret_key")
 
 // GenerateToken menghasilkan JWT token untuk pengguna
-func GenerateToken(userID uint, email string) (string, error) {
-    claims := jwt.MapClaims{
-        "id_user": userID,
-        "email":   email,
-        "exp":     time.Now().Add(time.Hour * 72).Unix(), // Token berlaku selama 72 jam
-    }
+func GenerateToken(userID uint, email string, role string) (string, error) {
+	claims := jwt.MapClaims{
+		"id_user": userID,
+		"email":   email,
+		"role":    role,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+	}
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    return token.SignedString(secretKey)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := token.SignedString([]byte("your_secret_key"))
+	if err != nil {
+		return "", err
+	}
+	return signedToken, nil
 }
 
 // ParseToken mem-parse JWT token dan mengembalikan klaim
