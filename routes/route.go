@@ -30,9 +30,4 @@ func SetupRoutes(app *fiber.App) {
     protected.Delete("/book/delete/:id", controller.DeleteBook)
     protected.Get("/endpoint", controller.SomeProtectedHandler)
 
-    // Rute yang memerlukan akses admin
-    adminRoutes := protected.Group("/admin", utils.AdminOnly)
-    adminRoutes.Get("/admin-only-endpoint", func(c *fiber.Ctx) error {
-        return c.SendString("Welcome, admin!")
-    })
 }

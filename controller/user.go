@@ -85,12 +85,3 @@ func SomeProtectedHandler(c *fiber.Ctx) error {
     return c.SendString("This is a protected endpoint")
 }
 
-// membatasi akses ke pengguna admin saja
-func AdminOnly(c *fiber.Ctx) error {
-	role := c.Locals("role").(string)
-	if role != "admin" {
-		return c.Status(fiber.StatusForbidden).SendString("Access denied")
-	}
-
-	return c.Next()
-}
