@@ -26,3 +26,24 @@ func AuthRequired(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+// AdminOnly memeriksa apakah pengguna memiliki peran admin
+func AdminOnly(c *fiber.Ctx) error {
+    tokenString := c.Get("Authorization")
+    tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+
+    claims := jwt.MapClaims{}
+    token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+        return []byte("your_secret_key"), nil
+    })
+    if err != nil || !token.Valid {
+        return c.Status(fiber.StatusUnauthorized).SendString("Invalid or expired token")
+    }
+
+    role := claims["role"].(string)
+    if role != "admin" {
+        return c.Status(fiber.StatusForbidden).SendString("Access denied")
+    }
+
+    return c.Next()
+}
+

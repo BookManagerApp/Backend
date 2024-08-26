@@ -14,16 +14,15 @@ func SetupRoutes(app *fiber.App) {
     app.Put("/book/update/:id", controller.UpdateBook)
     app.Delete("/book/delete/:id", controller.DeleteBook)
     app.Get("/genres", controller.GetGenres)
-	// // Rute untuk pencarian buku
-	// app.Get("/search", controller.SearchBooks)
-
+    // // Rute untuk pencarian buku
+    // app.Get("/search", controller.SearchBooks)
 
     // Rute untuk pengguna
     app.Post("/register", controller.Register)
     app.Post("/login", controller.Login)
 
     // Rute yang memerlukan autentikasi
-    protected := app.Group("/protected", utils.AuthRequired) 
+    protected := app.Group("/protected", utils.AuthRequired)
     protected.Get("/books", controller.GetBooks)
     protected.Get("/book/getbyid/:id", controller.GetBookByID)
     protected.Post("/book/post", controller.PostBook)
@@ -32,7 +31,7 @@ func SetupRoutes(app *fiber.App) {
     protected.Get("/endpoint", controller.SomeProtectedHandler)
 
     // Rute yang memerlukan akses admin
-    adminRoutes := protected.Group("/admin", controller.AdminOnly)
+    adminRoutes := protected.Group("/admin", utils.AdminOnly)
     adminRoutes.Get("/admin-only-endpoint", func(c *fiber.Ctx) error {
         return c.SendString("Welcome, admin!")
     })

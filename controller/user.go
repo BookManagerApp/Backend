@@ -85,7 +85,7 @@ func SomeProtectedHandler(c *fiber.Ctx) error {
     return c.SendString("This is a protected endpoint")
 }
 
-// AdminOnly is a middleware function that restricts access to admin users only
+// membatasi akses ke pengguna admin saja
 func AdminOnly(c *fiber.Ctx) error {
 	role := c.Locals("role").(string)
 	if role != "admin" {
